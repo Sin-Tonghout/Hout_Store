@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product | Admin</title>
+  <link rel="stylesheet" href="/css/output.css" />
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased">
+  <aside id="admin-sidebar" class="bg-slate-900 md:fixed md:inset-y-0 md:left-0 md:z-30 md:w-60 md:overflow-y-auto"></aside>
+
+  <div class="md:pl-60">
+    <header id="admin-topbar" class="sticky top-0 z-20 border-b border-slate-200 bg-white"></header>
+
+    <main class="p-4 md:p-8">
+      <div class="flex items-center gap-3">
+        <button type="button" data-back data-fallback="/admin/products"
+          class="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100">&larr; Back</button>
+        <h1 id="form-title" class="text-2xl font-bold text-slate-900">Add product</h1>
+      </div>
+
+      <div id="form-error" class="mt-4 hidden max-w-3xl rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700"></div>
+
+      <form id="product-form" class="mt-6 max-w-3xl space-y-5 rounded-xl border border-slate-200 bg-white p-6" novalidate>
+        <div>
+          <label for="name" class="form-label">Product name *</label>
+          <input id="name" name="name" type="text" maxlength="200" class="form-input" />
+        </div>
+
+        <div>
+          <label for="slug" class="form-label">Slug</label>
+          <input id="slug" name="slug" type="text" maxlength="220" class="form-input" placeholder="created from the name if empty" />
+          <p class="mt-1 text-xs text-slate-500">Lowercase letters, numbers and hyphens. This is the product page address.</p>
+        </div>
+
+        <div>
+          <label for="category_id" class="form-label">Category</label>
+          <select id="category_id" name="category_id" class="form-input">
+            <option value="">No category</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="short_description" class="form-label">Short description</label>
+          <textarea id="short_description" name="short_description" rows="2" maxlength="500" class="form-input"></textarea>
+        </div>
+
+        <div>
+          <label for="description" class="form-label">Description</label>
+          <textarea id="description" name="description" rows="8" class="form-input"></textarea>
+        </div>
+
+        <div class="grid gap-5 sm:grid-cols-3">
+          <div>
+            <label for="price" class="form-label">Price (USD) *</label>
+            <input id="price" name="price" type="number" step="0.01" min="0" class="form-input" />
+          </div>
+          <div>
+            <label for="compare_price" class="form-label">Compare price</label>
+            <input id="compare_price" name="compare_price" type="number" step="0.01" min="0" class="form-input" />
+          </div>
+          <div>
+            <label for="version" class="form-label">Version</label>
+            <input id="version" name="version" type="text" maxlength="30" class="form-input" placeholder="1.0.0" />
+          </div>
+        </div>
+
+        <div class="grid gap-5 sm:grid-cols-2">
+          <div>
+            <label for="status" class="form-label">Status</label>
+            <select id="status" name="status" class="form-input">
+              <option value="draft">Draft (hidden)</option>
+              <option value="published">Published</option>
+              <option value="archived">Archived (hidden)</option>
+            </select>
+          </div>
+          <div class="flex items-end">
+            <label class="flex items-center gap-2 pb-2 text-sm font-medium text-slate-700">
+              <input id="featured" type="checkbox" class="h-4 w-4 rounded border-slate-300" />
+              Featured on the home page
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label for="cover_image" class="form-label">Cover image</label>
+          <div id="cover-current" class="mt-2 hidden"></div>
+          <input id="cover_image" name="cover_image" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+            class="mt-2 block w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-100 file:px-4 file:py-2 file:text-sm file:font-medium file:text-slate-700 hover:file:bg-slate-200" />
+          <p class="mt-1 text-xs text-slate-500">JPG, PNG or WebP, up to 2 MB.</p>
+          <label id="remove-cover-wrap" class="mt-2 hidden items-center gap-2 text-sm text-slate-700">
+            <input id="remove_cover" name="remove_cover" type="checkbox" value="1" class="h-4 w-4 rounded border-slate-300" />
+            Remove the current cover image
+          </label>
+        </div>
+
+        <div>
+          <label for="digital_file" class="form-label">Digital file</label>
+          <p id="file-current" class="mt-1 text-sm text-slate-600"></p>
+          <input id="digital_file" name="digital_file" type="file"
+            class="mt-2 block w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-100 file:px-4 file:py-2 file:text-sm file:font-medium file:text-slate-700 hover:file:bg-slate-200" />
+          <p class="mt-1 text-xs text-slate-500">
+            zip, rar, 7z, pdf, epub, docx, xlsx, pptx, psd, ai, fig, mp4, mp3, txt, csv, json. Up to 500 MB.
+            A product needs a file before it can be published. This file is private and only paying customers can download it.
+          </p>
+        </div>
+
+        <div class="flex gap-3 pt-2">
+          <button type="submit" class="btn-primary">Save Product</button>
+          <a href="/admin/products" class="btn-secondary">Cancel</a>
+        </div>
+      </form>
+    </main>
+  </div>
+
+  <script type="module" src="/js/admin/layout.js"></script>
+  <script type="module" src="/js/admin/product-form.js"></script>
+</body>
+</html>

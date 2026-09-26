@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Order | Hout Store</title>
+  <link rel="stylesheet" href="/css/output.css" />
+</head>
+<body class="flex min-h-screen flex-col bg-slate-50 text-slate-800 antialiased">
+  <div id="site-header" class="sticky top-0 z-40 min-h-16"></div>
+
+  <main class="mx-auto w-full max-w-4xl flex-1 px-4 py-8">
+    <button type="button" data-back data-fallback="/orders"
+      class="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100">&larr; Back</button>
+
+    <div id="order-root" class="mt-6"></div>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script type="module" src="/js/navbar.js"></script>
+  <script type="module" src="/js/orders.js"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+node_modules/
+.env
+*.log
+.DS_Store
+
+# private product files (keep the folder, ignore the files)
+storage/products/*
+!storage/products/.gitkeep
+
+storage/covers/
+storage/tmp/

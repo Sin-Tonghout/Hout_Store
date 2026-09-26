@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Order | Admin</title>
+  <link rel="stylesheet" href="/css/output.css" />
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased">
+  <aside id="admin-sidebar" class="bg-slate-900 md:fixed md:inset-y-0 md:left-0 md:z-30 md:w-60 md:overflow-y-auto"></aside>
+
+  <div class="md:pl-60">
+    <header id="admin-topbar" class="sticky top-0 z-20 border-b border-slate-200 bg-white"></header>
+
+    <main class="p-4 md:p-8">
+      <button type="button" data-back data-fallback="/admin/orders"
+        class="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100">&larr; Back</button>
+
+      <div id="order-detail-root" class="mt-6"></div>
+    </main>
+  </div>
+
+  <script type="module" src="/js/admin/layout.js"></script>
+  <script type="module" src="/js/admin/orders.js"></script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shop | Hout Store</title>
+    <link rel="stylesheet" href="/css/output.css" />
+  </head>
+  <body
+    class="flex min-h-screen flex-col bg-slate-50 text-slate-800 antialiased"
+  >
+    <div id="site-header" class="sticky top-0 z-40 min-h-16"></div>
+
+    <main class="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
+      <h1 class="text-3xl font-bold text-slate-900">Shop</h1>
+      <p class="mt-1 text-slate-600">Browse all digital products.</p>
+
+      <div id="category-chips" class="mt-6 flex flex-wrap gap-2"></div>
+      <div id="subcategory-chips"></div>
+      <div class="mt-6 flex flex-wrap items-center justify-between gap-3">
+        <p id="result-count" class="text-sm text-slate-600"></p>
+        <label class="flex items-center gap-2 text-sm text-slate-600">
+          Sort by
+          <select
+            id="sort-select"
+            class="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+          >
+            <option value="newest">Newest</option>
+            <option value="price_asc">Price: low to high</option>
+            <option value="price_desc">Price: high to low</option>
+            <option value="name">Name A-Z</option>
+          </select>
+        </label>
+      </div>
+
+      <div
+        id="product-grid"
+        class="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+      ></div>
+
+      <nav
+        id="pagination"
+        class="mt-8 flex items-center justify-center gap-3"
+        aria-label="Pagination"
+      ></nav>
+    </main>
+
+    <div id="site-footer"></div>
+
+    <script type="module" src="/js/navbar.js"></script>
+    <script type="module" src="/js/shop.js"></script>
+  </body>
+</html>

@@ -1,0 +1,93 @@
+@import "tailwindcss";
+@source "../";
+
+@layer components {
+  .form-label {
+    @apply block text-sm font-medium text-slate-700;
+  }
+  .form-input {
+    @apply mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200;
+  }
+  .btn-primary {
+    @apply rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-60;
+  }
+  .btn-secondary {
+    @apply inline-block rounded-lg border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-100;
+  }
+
+  /* Small buttons for the Actions column of tables */
+  .btn-sm {
+    @apply inline-flex items-center justify-center whitespace-nowrap rounded-md border px-3 py-1.5 text-xs font-semibold disabled:opacity-60;
+  }
+  .btn-sm-indigo {
+    @apply border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100;
+  }
+  .btn-sm-green {
+    @apply border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100;
+  }
+  .btn-sm-gray {
+    @apply border-slate-300 bg-white text-slate-700 hover:bg-slate-100;
+  }
+  .btn-sm-red {
+    @apply border-red-200 bg-red-50 text-red-700 hover:bg-red-100;
+  }
+  /* ---------- Receipt printing (Phase 12) ---------- */
+
+@media print {
+  @page {
+    margin: 10mm;
+  }
+
+  /* Hide everything except the receipt paper itself */
+  body * {
+    visibility: hidden;
+  }
+  #receipt-paper,
+  #receipt-paper * {
+    visibility: visible;
+  }
+  #receipt-paper {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  /* Belt-and-braces: these never print even if visibility above is somehow skipped */
+  #admin-sidebar,
+  #admin-topbar,
+  #site-header,
+  #site-footer,
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* 80mm thermal layout: narrow width, tighter spacing, monospace look */
+#receipt-paper[data-size="thermal"] {
+  max-width: 80mm;
+  font-size: 11px;
+  padding: 4mm;
+}
+#receipt-paper[data-size="thermal"] .receipt-store-name {
+  font-size: 14px;
+}
+
+/* A4 layout: a wider, more spaced-out business receipt */
+#receipt-paper[data-size="a4"] {
+  max-width: 480px;
+  font-size: 13px;
+}
+
+@media print {
+  #receipt-paper[data-size="thermal"] {
+    width: 80mm;
+    max-width: 80mm;
+  }
+  @page {
+    size: auto;
+  }
+}
+}
