@@ -1,0 +1,50 @@
+﻿
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Oldenburg&display=swap');
+
+html,
+body,
+button,
+input,
+textarea,
+select {
+  font-family: 'IBM Plex Serif', sans-serif;
+}
+
+#site-header,
+#site-header *,
+#site-footer,
+#site-footer * {
+  font-family: 'IBM Plex Serif', sans-serif;
+}
+
+/*
+ * Shared customer navbar + footer visual layer.
+ * Keep this file separate from page-specific styles.
+ */
+
+#site-header {
+  min-height: 0;
+}
+
+.store-layout-loaded {
+  --store-indigo: #4f46e5;
+}
+
+/* Keep the group hover behavior used by the customer navbar */
+.group {
+  position: relative;
+}
+
+.group:hover .group-hover\:bg-indigo-700 {
+  background-color: #4338ca;
+}
+
+/* Only the custom visual tweaks that are not already covered by Tailwind */
+#site-header .nav-shell {
+  position: relative;
+  z-index: 40;
+}
+
+#site-footer {
+  position: relative;
+}

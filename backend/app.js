@@ -45,6 +45,11 @@ app.use(
           'https://checkout.payway.com.kh',
         ],
        'img-src': ["'self'", 'data:', 'https://*.r2.dev', 'https://*.r2.cloudflarestorage.com'],
+       // Google Identity Services + Telegram Login Widget scripts. Both
+       // open a popup window for the actual sign-in, so no frame-src
+       // changes are needed here.
+       'script-src': ["'self'", 'https://accounts.google.com', 'https://telegram.org'],
+       'connect-src': ["'self'", 'https://accounts.google.com'],
       },
     },
   })
@@ -96,6 +101,8 @@ app.get('/shop', sendPage('shop.html'));
 app.get('/product/:slug', sendPage('product.html'));
 app.get('/login', sendPage('login.html'));
 app.get('/register', sendPage('register.html'));
+app.get('/forgot-password', sendPage('forgot-password.html'));
+app.get('/reset-password', sendPage('reset-password.html'));
 app.get('/cart', sendPage('cart.html'));
 
 // Pages that need a login

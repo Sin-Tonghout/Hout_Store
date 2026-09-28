@@ -81,6 +81,7 @@
   font-size: 13px;
 }
 
+
 @media print {
   #receipt-paper[data-size="thermal"] {
     width: 80mm;

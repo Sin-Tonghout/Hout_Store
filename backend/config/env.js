@@ -23,6 +23,10 @@ const config = {
     webhookSecret: process.env.TELEGRAM_WEBHOOK_SECRET || "",
   },
 
+  google: {
+    clientId: process.env.GOOGLE_CLIENT_ID || "",
+  },
+
   paymentMode: process.env.PAYMENT_MODE || "demo",
 
   payway: {

@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 
 const SALT_ROUNDS = 12;
 
@@ -14,4 +15,20 @@ function comparePassword(plain, hash) {
   return bcrypt.compare(plain, hash);
 }
 
-module.exports = { hashPassword, comparePassword, DUMMY_HASH };
+// Password-reset tokens: we only ever store the hash, never the raw token,
+// so a leaked database can't be used to reset accounts.
+function generateResetToken() {
+  return crypto.randomBytes(32).toString('hex');
+}
+
+function hashResetToken(rawToken) {
+  return crypto.createHash('sha256').update(rawToken).digest('hex');
+}
+
+module.exports = {
+  hashPassword,
+  comparePassword,
+  DUMMY_HASH,
+  generateResetToken,
+  hashResetToken,
+};

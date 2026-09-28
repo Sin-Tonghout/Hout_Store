@@ -145,9 +145,27 @@ async function sendAdminTest(adminName) {
   return sendMessage(text);
 }
 
+// Password resets are admin-mediated: there's no email service configured,
+// so the reset link is sent to the admin chat and the admin passes it on to
+// the customer through whatever channel they normally use.
+async function sendPasswordResetRequest({ name, email, resetUrl }) {
+  const text = [
+    `🔑 *PASSWORD RESET REQUESTED*`,
+    '',
+    `Customer:\n${esc(name)}`,
+    `Email:\n${esc(email)}`,
+    '',
+    `Reset link \\(valid 1 hour\\):\n${esc(resetUrl)}`,
+    '',
+    `Send this link to the customer to let them set a new password\\.`,
+  ].join('\n');
+  return sendMessage(text);
+}
+
 module.exports = {
   isConfigured,
   sendOrderCreated,
   updateOrderStatus,
   sendAdminTest,
+  sendPasswordResetRequest,
 };
