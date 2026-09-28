@@ -13,6 +13,25 @@ function esc(value) {
   return String(value ?? '').replace(MARKDOWN_ESCAPE, '\\$&');
 }
 
+// Maps the payment_method value stored in the payments table to the text
+// shown in Telegram. Unknown methods are shown as-is instead of silently
+// falling back to "Demo Payment".
+const METHOD_LABELS = {
+  demo: 'Demo Payment',
+  aba_payway: 'ABA PayWay',
+};
+
+function methodLabel(method) {
+  return METHOD_LABELS[method] || method || 'Unknown';
+}
+
+// Callers may pass either a ready label (paymentMethodLabel) or the raw
+// payment_method code (paymentMethod). The code is preferred.
+function resolveLabel({ paymentMethod, paymentMethodLabel }) {
+  if (paymentMethod) return methodLabel(paymentMethod);
+  return paymentMethodLabel || 'Unknown';
+}
+
 async function call(method, body) {
   if (!isConfigured()) {
     console.log(`[telegram] disabled or not configured, skipping ${method}`);
@@ -67,14 +86,25 @@ async function editOrSend(messageId, text) {
 }
 
 const currency = (amount) => `$${Number(amount).toFixed(2)}`;
-const now = () =>
-  new Date().toLocaleString('en-GB', {
+// Times are always shown in the store's timezone, not the server's. Cloud
+// hosts (Render, Koyeb) and TiDB run in UTC, which is why the time was wrong.
+// Override with STORE_TIMEZONE in .env if needed.
+const TIMEZONE = process.env.STORE_TIMEZONE || 'Asia/Phnom_Penh';
+
+function formatTime(value) {
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value ?? '');
+  return date.toLocaleString('en-GB', {
+    timeZone: TIMEZONE,
     day: '2-digit',
     month: 'short',
     year: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
   });
+}
+
+const now = () => formatTime(new Date());
 
 const STATUS_LINES = {
   pending: 'Pending',
@@ -114,11 +144,12 @@ function buildOrderText({ order, items, paymentMethodLabel, paymentStatus, trans
 
 // Sends the first message for a new order (status: Pending). Returns the
 // Telegram message id so it can be edited later.
-async function sendOrderCreated({ order, items, paymentMethodLabel }) {
+// Pass paymentMethod ('demo' | 'aba_payway') or a ready paymentMethodLabel.
+async function sendOrderCreated({ order, items, paymentMethod, paymentMethodLabel }) {
   const text = buildOrderText({
     order,
     items,
-    paymentMethodLabel,
+    paymentMethodLabel: resolveLabel({ paymentMethod, paymentMethodLabel }),
     paymentStatus: 'pending',
     transactionId: null,
     placedAt: now(),
@@ -127,16 +158,25 @@ async function sendOrderCreated({ order, items, paymentMethodLabel }) {
 }
 
 // Edits the existing order message to show the new payment result.
+// Pass paymentMethod ('demo' | 'aba_payway') or a ready paymentMethodLabel.
 async function updateOrderStatus({
   messageId,
   order,
   items,
+  paymentMethod,
   paymentMethodLabel,
   paymentStatus,
   transactionId,
   placedAt,
 }) {
-  const text = buildOrderText({ order, items, paymentMethodLabel, paymentStatus, transactionId, placedAt });
+  const text = buildOrderText({
+    order,
+    items,
+    paymentMethodLabel: resolveLabel({ paymentMethod, paymentMethodLabel }),
+    paymentStatus,
+    transactionId,
+    placedAt: formatTime(placedAt),
+  });
   return editOrSend(messageId, text);
 }
 
@@ -164,6 +204,7 @@ async function sendPasswordResetRequest({ name, email, resetUrl }) {
 
 module.exports = {
   isConfigured,
+  methodLabel,
   sendOrderCreated,
   updateOrderStatus,
   sendAdminTest,

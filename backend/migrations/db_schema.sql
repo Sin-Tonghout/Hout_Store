@@ -352,3 +352,10 @@ ALTER TABLE orders
   `data` mediumtext COLLATE utf8mb4_bin,
   PRIMARY KEY (`session_id`)
 ) ENGINE=InnoDB;
+
+use digital_store;
+SELECT id, order_id, payment_method, provider, status
+FROM payments ORDER BY id DESC LIMIT 5;
+
+SELECT NOW() AS db_now, UTC_TIMESTAMP() AS utc_now, @@session.time_zone AS tz;
+SELECT order_number, created_at FROM orders ORDER BY id DESC LIMIT 1;

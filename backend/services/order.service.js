@@ -4,10 +4,11 @@ const orderItemModel = require('../models/orderItem.model');
 const paymentModel = require('../models/payment.model');
 const AppError = require('../utils/appError');
 const telegramService = require('./telegram.service');
-// const telegramService = require('./telegram.service');
-// const orderModel_ = require('../models/order.model'); // already imported above as orderModel
 
-async function createFromCart(userId, session) {
+// paymentMethod is optional: at checkout the customer has usually not paid yet,
+// so the first Telegram message says "Not selected yet". The message is edited
+// later with the real method once a payment attempt is made.
+async function createFromCart(userId, session, paymentMethod = null) {
   const cart = await cartService.buildCart(session);
 
   if (!cart.items.length) {
@@ -32,17 +33,22 @@ async function createFromCart(userId, session) {
   session.cart = []; // the cart is empty after a successful order
 
   // A Telegram problem must never break checkout for the customer
-   notifyOrderCreated(orderId, cart.items).catch((err) => console.error('[notifyOrderCreated]', err));
+  notifyOrderCreated(orderId, cart.items, paymentMethod).catch((err) =>
+    console.error('[notifyOrderCreated]', err)
+  );
 
   return orderId;
 }
 
-async function notifyOrderCreated(orderId, items) {
+async function notifyOrderCreated(orderId, items, paymentMethod) {
   const order = await orderModel.findForTelegram(orderId);
+  if (!order) return;
+
   const result = await telegramService.sendOrderCreated({
     order,
     items,
-    paymentMethodLabel: 'Demo Payment', // the only method available so far
+    paymentMethod, // 'demo' | 'aba_payway' | null
+    paymentMethodLabel: paymentMethod ? undefined : 'Not selected yet',
   });
   if (result.ok) {
     await orderModel.setTelegramMessageId(orderId, result.messageId);
@@ -106,26 +112,30 @@ async function refundByAdmin(orderId) {
   }
 
   await orderModel.refund(orderId);
-   notifyRefund(orderId).catch((err) => console.error('[notifyRefund]', err));
+  notifyRefund(orderId).catch((err) => console.error('[notifyRefund]', err));
 }
 
 async function notifyRefund(orderId) {
   const order = await orderModel.findForTelegram(orderId);
   if (!order) return;
 
-  const orderItemModel_ = require('../models/orderItem.model');
-  const items = await orderItemModel_.listByOrderId(orderId);
+  const [items, payments] = await Promise.all([
+    orderItemModel.listByOrderId(orderId),
+    paymentModel.listByOrderId(orderId),
+  ]);
+
+  // The payment that was actually paid (listByOrderId is newest first)
+  const paidPayment = payments.find((p) => p.status === 'success') || payments[0];
 
   const result = await telegramService.updateOrderStatus({
     messageId: order.telegram_message_id,
     order,
     items,
-    paymentMethodLabel: 'Demo Payment',
+    paymentMethod: paidPayment ? paidPayment.payment_method : null,
+    paymentMethodLabel: paidPayment ? undefined : 'Unknown',
     paymentStatus: 'refunded',
     transactionId: null,
-    placedAt: new Date(order.created_at).toLocaleString('en-GB', {
-      day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit',
-    }),
+    placedAt: order.created_at,
   });
 
   if (result.ok && result.messageId !== order.telegram_message_id) {

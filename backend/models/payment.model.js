@@ -139,20 +139,24 @@ async function notifyPaymentResult(orderId, outcome, transactionId) {
     ])
     .then(([rows]) => rows);
 
+  // Which method was actually used for this payment attempt
+  const [paymentRows] = await pool.execute(
+    `SELECT payment_method FROM payments
+      WHERE order_id = ? AND transaction_id = ?
+      LIMIT 1`,
+    [orderId, transactionId],
+  );
+  const paymentMethod = paymentRows[0] ? paymentRows[0].payment_method : null;
+
   const result = await telegramService.updateOrderStatus({
     messageId: order.telegram_message_id,
     order,
     items,
-    paymentMethodLabel: "Demo Payment",
+    paymentMethod,
+    paymentMethodLabel: paymentMethod ? undefined : "Unknown",
     paymentStatus: outcome,
     transactionId: outcome === "success" ? transactionId : null,
-    placedAt: new Date(order.created_at).toLocaleString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    }),
+    placedAt: order.created_at,
   });
 
   // editMessageText can return a NEW message id if it had to fall back to
